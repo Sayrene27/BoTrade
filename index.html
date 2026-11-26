@@ -1459,6 +1459,150 @@
       to { opacity: 1; transform: translateX(0); }
     }
 
+    /* ==========================================================================
+       CALENDAR PAGE STYLES
+       ========================================================================== */
+    .cal-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .cal-month-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 6px 12px;
+    }
+    .cal-month-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      min-width: 170px;
+      text-align: center;
+      text-transform: capitalize;
+    }
+    .cal-kpi-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .cal-grid-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-card);
+      overflow-x: auto;
+    }
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(110px, 1fr));
+      gap: 8px;
+      margin-bottom: 8px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .cal-days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(110px, 1fr));
+      gap: 8px;
+    }
+    .cal-day-cell {
+      min-height: 98px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+    .cal-day-cell:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+    .cal-day-cell.other-month {
+      opacity: 0.35;
+      background: transparent;
+      border-style: dashed;
+    }
+    .cal-day-cell.today {
+      border: 2px solid var(--blue-accent) !important;
+    }
+    .cal-day-cell.has-trades {
+      cursor: pointer;
+    }
+    .cal-day-cell.selected {
+      outline: 2px solid var(--yellow-primary);
+      box-shadow: 0 0 12px rgba(240, 185, 11, 0.3);
+    }
+    .cal-day-cell.day-win {
+      background: linear-gradient(180deg, rgba(14, 203, 129, 0.07), var(--bg-card) 60%);
+      border-color: rgba(14, 203, 129, 0.35);
+    }
+    .cal-day-cell.day-loss {
+      background: linear-gradient(180deg, rgba(246, 70, 93, 0.07), var(--bg-card) 60%);
+      border-color: rgba(246, 70, 93, 0.35);
+    }
+    .cal-day-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cal-day-number {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .cal-trade-count {
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+    }
+    .cal-day-pnl {
+      font-size: 14px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      margin-top: 6px;
+      letter-spacing: -0.02em;
+    }
+    .cal-day-win-rate {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .cal-day-empty-label {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-top: auto;
+    }
+    .cal-details-card {
+      margin-top: 20px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-card);
+    }
+
     /* Responsive adjustments */
     @media (max-width: 768px) {
       .app-wrapper {
@@ -1653,6 +1797,9 @@
         <div class="page-nav-box">
           <button class="page-nav-btn active" id="btnNavDashboard" onclick="switchMainPage('dashboard')">
             <i class="fa-solid fa-gauge-high"></i> Tableau de Bord
+          </button>
+          <button class="page-nav-btn" id="btnNavCalendar" onclick="switchMainPage('calendar')">
+            <i class="fa-regular fa-calendar-days"></i> Calendrier PnL
           </button>
           <button class="page-nav-btn" id="btnNavAnalytics" onclick="switchMainPage('analytics')">
             <i class="fa-solid fa-chart-pie"></i> Analytique & Stats Approfondies
@@ -2248,6 +2395,152 @@
     </div>
 
   </main> <!-- /pageAnalytics -->
+
+  <!-- ==========================================================================
+       PAGE CALENDRIER: HISTORIQUE JOURNALIER DU PnL
+       ========================================================================== -->
+  <main id="pageCalendar" class="app-wrapper" style="display:none;">
+
+    <!-- Section Header Bar -->
+    <div class="cal-header-bar">
+      <div>
+        <div class="section-title">
+          <i class="fa-regular fa-calendar-days" style="color:var(--yellow-primary)"></i>
+          <span>Calendrier de Trading & PnL Journalier</span>
+        </div>
+        <div class="section-subtitle">
+          Visualisez vos gains et pertes nets jour par jour à chaque fin de trade.
+        </div>
+      </div>
+
+      <!-- Navigation Mois & Aujourd'hui -->
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <div class="cal-month-nav">
+          <button class="btn btn-secondary btn-sm" onclick="changeCalendarMonth(-1)" title="Mois précédent">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <span class="cal-month-title" id="calCurrentMonthLabel">-- ----</span>
+          <button class="btn btn-secondary btn-sm" onclick="changeCalendarMonth(1)" title="Mois suivant">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="goCalendarToday()" title="Aller au mois en cours">
+          Aujourd'hui
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="switchMainPage('dashboard')">
+          <i class="fa-solid fa-arrow-left"></i> Tableau de bord
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI Summary for selected month -->
+    <div class="cal-kpi-summary">
+      <div class="card kpi-card glow-blue">
+        <div class="kpi-header">
+          <span>RÉSULTAT NET DU MOIS</span>
+          <div class="kpi-icon-badge"><i class="fa-solid fa-wallet"></i></div>
+        </div>
+        <div>
+          <div class="kpi-value mono" id="calMonthNetPnl">$0.00</div>
+          <div class="kpi-sub">
+            <span id="calMonthPnlTag" class="trend-tag trend-neutral">0 trade(s)</span>
+            <span>Sur les jours clôturés</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card kpi-card glow-green">
+        <div class="kpi-header">
+          <span>JOURS GAGNANTS VS PERDANTS</span>
+          <div class="kpi-icon-badge"><i class="fa-solid fa-scale-balanced"></i></div>
+        </div>
+        <div>
+          <div class="kpi-value mono" id="calMonthDaysRatio">0V / 0D</div>
+          <div class="kpi-sub">
+            <span id="calMonthDaysWinRate" class="trend-tag trend-up">0%</span>
+            <span>Jours positifs</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card kpi-card glow-yellow">
+        <div class="kpi-header">
+          <span>MEILLEUR JOUR DU MOIS</span>
+          <div class="kpi-icon-badge"><i class="fa-solid fa-trophy"></i></div>
+        </div>
+        <div>
+          <div class="kpi-value mono val-positive" id="calMonthBestDay">+$0.00</div>
+          <div class="kpi-sub">
+            <span id="calMonthBestDayDate" class="trend-tag trend-up">-</span>
+            <span>Record journalier</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card kpi-card glow-red">
+        <div class="kpi-header">
+          <span>PIRE JOUR DU MOIS</span>
+          <div class="kpi-icon-badge"><i class="fa-solid fa-chart-line-down"></i></div>
+        </div>
+        <div>
+          <div class="kpi-value mono val-negative" id="calMonthWorstDay">-$0.00</div>
+          <div class="kpi-sub">
+            <span id="calMonthWorstDayDate" class="trend-tag trend-down">-</span>
+            <span>Drawdown max jour</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="cal-grid-container">
+      <div class="cal-weekdays">
+        <div>Lun</div>
+        <div>Mar</div>
+        <div>Mer</div>
+        <div>Jeu</div>
+        <div>Ven</div>
+        <div>Sam</div>
+        <div>Dim</div>
+      </div>
+      <div class="cal-days-grid" id="calDaysGrid">
+        <!-- Dynamically rendered -->
+      </div>
+    </div>
+
+    <!-- Selected Day Detailed Trades -->
+    <div class="cal-details-card" id="calSelectedDaySection">
+      <div class="section-title-bar" style="margin-bottom:12px;">
+        <div class="section-title" style="font-size:1rem;">
+          <i class="fa-regular fa-clock" style="color:var(--yellow-primary)"></i>
+          <span id="calSelectedDayTitle">Détail des trades de la journée sélectionnée</span>
+        </div>
+        <div id="calSelectedDayTotalTag" class="trend-tag trend-neutral" style="font-size:13px; font-weight:700;">
+          0 trade
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Heure Clôture</th>
+              <th>Actif</th>
+              <th>Type</th>
+              <th>Montant Position</th>
+              <th>Gain / Perte Brut</th>
+              <th>Frais (Comm + Swap)</th>
+              <th>Résultat Net</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody id="calSelectedDayTableBody">
+            <!-- Dynamically populated on day click -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main> <!-- /pageCalendar -->
 
   <!-- ==========================================================================
        PAGE 3: GESTION & EXPORT (ADMIN & DATA MANAGEMENT)
@@ -3254,24 +3547,31 @@ open_time,close_time,is_open,weekend_pause,pair,type,amount,pnl,commission,swap
     }
 
     /* ==========================================================================
-       3. NAVIGATION BETWEEN PAGES (DASHBOARD / ANALYTICS / ADMIN)
+       3. NAVIGATION BETWEEN PAGES (DASHBOARD / CALENDAR / ANALYTICS / ADMIN)
        ========================================================================== */
     function switchMainPage(page) {
       activeMainPage = page;
       const pageDash = document.getElementById('pageDashboard');
+      const pageCal  = document.getElementById('pageCalendar');
       const pageAna  = document.getElementById('pageAnalytics');
       const pageAdm  = document.getElementById('pageAdmin');
       const btnDash  = document.getElementById('btnNavDashboard');
+      const btnCal   = document.getElementById('btnNavCalendar');
       const btnAna   = document.getElementById('btnNavAnalytics');
       const btnAdm   = document.getElementById('btnNavAdmin');
 
       // Hide all pages & deactivate all tabs
       pageDash.style.display = 'none';
+      if (pageCal) pageCal.style.display = 'none';
       pageAna.style.display  = 'none';
       if (pageAdm) pageAdm.style.display = 'none';
-      [btnDash, btnAna, btnAdm].forEach(b => b && b.classList.remove('active'));
+      [btnDash, btnCal, btnAna, btnAdm].forEach(b => b && b.classList.remove('active'));
 
-      if (page === 'analytics') {
+      if (page === 'calendar') {
+        if (pageCal) pageCal.style.display = 'flex';
+        if (btnCal) btnCal.classList.add('active');
+        renderTradingCalendar();
+      } else if (page === 'analytics') {
         pageAna.style.display = 'flex';
         btnAna.classList.add('active');
         renderAdvancedAnalytics();
@@ -5389,12 +5689,344 @@ open_time,close_time,is_open,weekend_pause,pair,type,amount,pnl,commission,swap
         .replace(/'/g, "&#039;");
     }
 
+    /* ==========================================================================
+       TRADING CALENDAR LOGIC (PnL JOURNALIER PAR DATE DE FIN DE TRADE)
+       ========================================================================== */
+    let calCurrentYear = new Date().getFullYear();
+    let calCurrentMonth = new Date().getMonth(); // 0-indexed (0 = Janvier)
+    let calSelectedDayKey = null;
+
+    function initCalendarDefaultMonth() {
+      // Si des trades existent, positionner par défaut sur le mois du dernier trade clôturé
+      const closed = trades.filter(t => !t.isOpen && (t.closeTime || t.openTime));
+      if (closed.length > 0) {
+        const sorted = [...closed].sort((a, b) => new Date(b.closeTime || b.openTime) - new Date(a.closeTime || a.openTime));
+        const lastDate = new Date(sorted[0].closeTime || sorted[0].openTime);
+        if (!isNaN(lastDate.getTime())) {
+          calCurrentYear = lastDate.getFullYear();
+          calCurrentMonth = lastDate.getMonth();
+        }
+      }
+    }
+
+    function changeCalendarMonth(delta) {
+      calCurrentMonth += delta;
+      if (calCurrentMonth > 11) {
+        calCurrentMonth = 0;
+        calCurrentYear++;
+      } else if (calCurrentMonth < 0) {
+        calCurrentMonth = 11;
+        calCurrentYear--;
+      }
+      renderTradingCalendar();
+    }
+
+    function goCalendarToday() {
+      const today = new Date();
+      calCurrentYear = today.getFullYear();
+      calCurrentMonth = today.getMonth();
+      renderTradingCalendar();
+    }
+
+    function renderTradingCalendar() {
+      const grid = document.getElementById('calDaysGrid');
+      const monthLabel = document.getElementById('calCurrentMonthLabel');
+      if (!grid || !monthLabel) return;
+
+      const dateObj = new Date(calCurrentYear, calCurrentMonth, 1);
+      const monthName = dateObj.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+      monthLabel.textContent = monthName;
+
+      // Regrouper les trades par jour de fin de trade (YYYY-MM-DD)
+      const dayMap = {};
+      trades.forEach(t => {
+        if (t.isOpen) return; // Seuls les trades clôturés comptent dans le PnL journalier
+        const finishStr = t.closeTime || t.openTime;
+        if (!finishStr) return;
+        const dayKey = finishStr.slice(0, 10);
+        if (!dayMap[dayKey]) {
+          dayMap[dayKey] = {
+            trades: [],
+            grossPnl: 0,
+            comm: 0,
+            swap: 0,
+            netPnl: 0,
+            wins: 0,
+            losses: 0
+          };
+        }
+        const fees = getTradeFees(t);
+        const pnl = parseFloat(t.pnl || 0);
+        const net = pnl + fees.comm + fees.swap;
+
+        dayMap[dayKey].trades.push(t);
+        dayMap[dayKey].grossPnl += pnl;
+        dayMap[dayKey].comm += fees.comm;
+        dayMap[dayKey].swap += fees.swap;
+        dayMap[dayKey].netPnl += net;
+        if (net > 0) dayMap[dayKey].wins++;
+        else dayMap[dayKey].losses++;
+      });
+
+      // Statistiques du mois sélectionné
+      let monthTotalNet = 0;
+      let monthClosedTradesCount = 0;
+      let monthWinningDays = 0;
+      let monthLosingDays = 0;
+      let monthBestDayVal = -Infinity;
+      let monthBestDayDate = null;
+      let monthWorstDayVal = Infinity;
+      let monthWorstDayDate = null;
+
+      // Construction des cases du calendrier
+      const firstDayOfMonth = new Date(calCurrentYear, calCurrentMonth, 1);
+      const lastDayOfMonth = new Date(calCurrentYear, calCurrentMonth + 1, 0);
+      const daysInMonth = lastDayOfMonth.getDate();
+
+      // Jour de la semaine (1 = Lundi ... 7 = Dimanche)
+      let startDayOfWeek = firstDayOfMonth.getDay();
+      if (startDayOfWeek === 0) startDayOfWeek = 7; // Dimanche = 7
+
+      const prevMonthLastDay = new Date(calCurrentYear, calCurrentMonth, 0).getDate();
+      const todayStr = new Date().toISOString().slice(0, 10);
+
+      grid.innerHTML = '';
+
+      // 1. Jours du mois précédent
+      for (let i = startDayOfWeek - 1; i > 0; i--) {
+        const dayNum = prevMonthLastDay - i + 1;
+        const cell = document.createElement('div');
+        cell.className = 'cal-day-cell other-month';
+        cell.innerHTML = `
+          <div class="cal-day-top">
+            <span class="cal-day-number">${dayNum}</span>
+          </div>
+        `;
+        grid.appendChild(cell);
+      }
+
+      // 2. Jours du mois courant
+      let defaultDayToSelect = null;
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayString = `${calCurrentYear}-${String(calCurrentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dayData = dayMap[dayString];
+
+        const cell = document.createElement('div');
+        cell.className = 'cal-day-cell';
+        if (dayString === todayStr) cell.classList.add('today');
+
+        if (dayData && dayData.trades.length > 0) {
+          cell.classList.add('has-trades');
+          const isWin = dayData.netPnl > 0;
+          const isLoss = dayData.netPnl < 0;
+
+          if (isWin) {
+            cell.classList.add('day-win');
+            monthWinningDays++;
+          } else if (isLoss) {
+            cell.classList.add('day-loss');
+            monthLosingDays++;
+          }
+
+          monthTotalNet += dayData.netPnl;
+          monthClosedTradesCount += dayData.trades.length;
+
+          if (dayData.netPnl > monthBestDayVal) {
+            monthBestDayVal = dayData.netPnl;
+            monthBestDayDate = dayString;
+          }
+          if (dayData.netPnl < monthWorstDayVal) {
+            monthWorstDayVal = dayData.netPnl;
+            monthWorstDayDate = dayString;
+          }
+
+          const sign = dayData.netPnl >= 0 ? '+' : '';
+          const pnlColorClass = dayData.netPnl >= 0 ? 'val-positive' : 'val-negative';
+
+          cell.innerHTML = `
+            <div class="cal-day-top">
+              <span class="cal-day-number">${day}</span>
+              <span class="cal-trade-count">${dayData.trades.length} trade${dayData.trades.length > 1 ? 's' : ''}</span>
+            </div>
+            <div class="cal-day-pnl ${pnlColorClass}">
+              ${sign}${formatMoney(dayData.netPnl)}
+            </div>
+            <div class="cal-day-win-rate">
+              ${dayData.wins}V / ${dayData.losses}D (${((dayData.wins / dayData.trades.length) * 100).toFixed(0)}%)
+            </div>
+          `;
+
+          cell.onclick = () => selectCalendarDay(dayString, dayData);
+
+          // Garde en mémoire le premier jour avec trades ou le jour sélectionné
+          if (!defaultDayToSelect || dayString === calSelectedDayKey) {
+            defaultDayToSelect = { key: dayString, data: dayData };
+          }
+        } else {
+          cell.innerHTML = `
+            <div class="cal-day-top">
+              <span class="cal-day-number">${day}</span>
+            </div>
+            <div class="cal-day-empty-label">Aucun trade</div>
+          `;
+          cell.onclick = () => selectCalendarDay(dayString, null);
+        }
+
+        if (dayString === calSelectedDayKey) {
+          cell.classList.add('selected');
+        }
+
+        grid.appendChild(cell);
+      }
+
+      // 3. Jours du mois suivant pour compléter la grille (grille de 7 colonnes)
+      const totalCellsFilled = (startDayOfWeek - 1) + daysInMonth;
+      const remainingCells = (7 - (totalCellsFilled % 7)) % 7;
+      for (let i = 1; i <= remainingCells; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cal-day-cell other-month';
+        cell.innerHTML = `
+          <div class="cal-day-top">
+            <span class="cal-day-number">${i}</span>
+          </div>
+        `;
+        grid.appendChild(cell);
+      }
+
+      // 4. Mettre à jour les KPIs mensuels du calendrier
+      const netPnlEl = document.getElementById('calMonthNetPnl');
+      netPnlEl.textContent = formatMoney(monthTotalNet, true);
+      netPnlEl.className = `kpi-value mono ${monthTotalNet >= 0 ? 'val-positive' : 'val-negative'}`;
+
+      const pnlTag = document.getElementById('calMonthPnlTag');
+      pnlTag.textContent = `${monthClosedTradesCount} trade(s) ce mois`;
+      pnlTag.className = `trend-tag ${monthTotalNet >= 0 ? 'trend-up' : 'trend-down'}`;
+
+      const totalActiveDays = monthWinningDays + monthLosingDays;
+      const daysRatioEl = document.getElementById('calMonthDaysRatio');
+      daysRatioEl.textContent = `${monthWinningDays}V / ${monthLosingDays}D`;
+
+      const daysWinRateEl = document.getElementById('calMonthDaysWinRate');
+      const daysWinRate = totalActiveDays > 0 ? (monthWinningDays / totalActiveDays) * 100 : 0;
+      daysWinRateEl.textContent = `${daysWinRate.toFixed(0)}%`;
+      daysWinRateEl.className = `trend-tag ${daysWinRate >= 50 ? 'trend-up' : 'trend-down'}`;
+
+      const bestDayEl = document.getElementById('calMonthBestDay');
+      const bestDayDateEl = document.getElementById('calMonthBestDayDate');
+      if (monthBestDayDate && monthBestDayVal !== -Infinity) {
+        bestDayEl.textContent = `+${formatMoney(monthBestDayVal)}`;
+        bestDayDateEl.textContent = monthBestDayDate.slice(8, 10) + ' ' + monthName.slice(0, 3);
+      } else {
+        bestDayEl.textContent = formatMoney(0);
+        bestDayDateEl.textContent = '-';
+      }
+
+      const worstDayEl = document.getElementById('calMonthWorstDay');
+      const worstDayDateEl = document.getElementById('calMonthWorstDayDate');
+      if (monthWorstDayDate && monthWorstDayVal !== Infinity && monthWorstDayVal < 0) {
+        worstDayEl.textContent = formatMoney(monthWorstDayVal);
+        worstDayDateEl.textContent = monthWorstDayDate.slice(8, 10) + ' ' + monthName.slice(0, 3);
+      } else {
+        worstDayEl.textContent = formatMoney(0);
+        worstDayDateEl.textContent = '-';
+      }
+
+      // Si un jour était déjà sélectionné dans ce mois, ou afficher le dernier jour de trade
+      if (calSelectedDayKey && calSelectedDayKey.startsWith(`${calCurrentYear}-${String(calCurrentMonth + 1).padStart(2, '0')}`)) {
+        selectCalendarDay(calSelectedDayKey, dayMap[calSelectedDayKey] || null);
+      } else if (defaultDayToSelect) {
+        selectCalendarDay(defaultDayToSelect.key, defaultDayToSelect.data);
+      } else {
+        selectCalendarDay(null, null);
+      }
+    }
+
+    function selectCalendarDay(dayString, dayData) {
+      calSelectedDayKey = dayString;
+
+      // Mettre à jour l'apparence de sélection dans la grille
+      document.querySelectorAll('.cal-day-cell').forEach(c => c.classList.remove('selected'));
+      if (dayString) {
+        const cells = document.querySelectorAll('.cal-days-grid .cal-day-cell:not(.other-month)');
+        const dayNumber = parseInt(dayString.slice(8, 10), 10);
+        if (cells[dayNumber - 1]) {
+          cells[dayNumber - 1].classList.add('selected');
+        }
+      }
+
+      const titleEl = document.getElementById('calSelectedDayTitle');
+      const tagEl = document.getElementById('calSelectedDayTotalTag');
+      const tbody = document.getElementById('calSelectedDayTableBody');
+      if (!titleEl || !tagEl || !tbody) return;
+
+      if (!dayString || !dayData || dayData.trades.length === 0) {
+        const prettyDate = dayString ? new Date(dayString + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : 'Sélectionnez un jour';
+        titleEl.textContent = `Trades du ${prettyDate}`;
+        tagEl.textContent = '0 trade clôturé';
+        tagEl.className = 'trend-tag trend-neutral';
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="empty-state" style="padding:28px 16px;">
+              <i class="fa-regular fa-calendar-xmark" style="font-size:24px; opacity:0.5; margin-bottom:8px;"></i>
+              <div>Aucun trade n'a été clôturé ce jour-là.</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const prettyDate = new Date(dayString + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      const sign = dayData.netPnl >= 0 ? '+' : '';
+      titleEl.innerHTML = `Trades du <strong>${prettyDate}</strong> &bull; Total Net : <span class="${dayData.netPnl >= 0 ? 'val-positive' : 'val-negative'}" style="font-family:'JetBrains Mono';">${sign}${formatMoney(dayData.netPnl)}</span>`;
+      
+      tagEl.textContent = `${dayData.trades.length} trade(s) clôturé(s)`;
+      tagEl.className = `trend-tag ${dayData.netPnl >= 0 ? 'trend-up' : 'trend-down'}`;
+
+      tbody.innerHTML = '';
+      dayData.trades.forEach(t => {
+        const fees = getTradeFees(t);
+        const pnl = parseFloat(t.pnl || 0);
+        const net = pnl + fees.comm + fees.swap;
+        const totalFeesPaid = fees.comm + fees.swap;
+        const closeHour = t.closeTime ? t.closeTime.slice(11, 16) : (t.openTime ? t.openTime.slice(11, 16) : '-');
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="mono font-semibold">${closeHour}</td>
+          <td><strong>${escapeHtml(t.pair || '-')}</strong></td>
+          <td>
+            <span class="badge ${t.type === 'BUY' ? 'badge-buy' : 'badge-sell'}">
+              <i class="fa-solid fa-arrow-${t.type === 'BUY' ? 'up' : 'down'}"></i> ${t.type}
+            </span>
+          </td>
+          <td class="mono">${formatMoney(t.amount || 0)}</td>
+          <td class="mono ${pnl >= 0 ? 'val-positive' : 'val-negative'}">${pnl >= 0 ? '+' : ''}${formatMoney(pnl)}</td>
+          <td class="mono" style="font-size:12px; color:${totalFeesPaid >= 0 ? 'var(--green-primary)' : 'var(--text-muted)'};">
+            ${totalFeesPaid >= 0 ? '+' : ''}${formatMoney(totalFeesPaid)}
+          </td>
+          <td class="mono font-bold ${net >= 0 ? 'val-positive' : 'val-negative'}">
+            ${net >= 0 ? '+' : ''}${formatMoney(net)}
+          </td>
+          <td>
+            <span class="badge ${net >= 0 ? 'badge-buy' : 'badge-sell'}">
+              ${net >= 0 ? 'Gain' : 'Perte'}
+            </span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
     function refreshAll() {
       updateLastUpdatedUI();
       updateKPIs();
       updateCharts();
       renderTradesTable();
       renderDepositsTable();
+      if (activeMainPage === 'calendar') {
+        renderTradingCalendar();
+      }
       if (activeMainPage === 'analytics') {
         renderAdvancedAnalytics();
       }
