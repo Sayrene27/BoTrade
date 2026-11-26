@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-26T11:20:14.487Z",
+  "updatedAt": "2026-11-26T20:11:01.926Z",
   "currency": "USD",
   "exchangeRateUsdEur": 0.91,
   "deposits": [
@@ -182,14 +182,27 @@
     },
     {
       "id": "tr_1795679838101_zkgh7",
-      "isOpen": true,
+      "isOpen": false,
       "openTime": "2026-11-26T02:16",
-      "closeTime": null,
+      "closeTime": "2026-11-26T17:04",
       "weekendPause": false,
       "pair": "BTC/USD",
       "type": "SELL",
       "amount": 0.01,
-      "pnl": 4.96,
+      "pnl": 7.06,
+      "commission": 0,
+      "swap": 0
+    },
+    {
+      "id": "tr_1795707568198_lvzqp",
+      "isOpen": true,
+      "openTime": "2026-11-26T17:04",
+      "closeTime": null,
+      "weekendPause": false,
+      "pair": "BTC/USD",
+      "type": "BUY",
+      "amount": 0.01,
+      "pnl": 3.68,
       "commission": 0,
       "swap": 0
     }
